@@ -74,3 +74,4 @@ Services : Toute la logique métier (calculs, validations, accès données)
 
 Modèles : Définition des structures de données
 
+# Hassan MG
