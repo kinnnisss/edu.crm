@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Enseignants{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Liste des Enseignants</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">Ajouter un enseignant</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('teachers.create') }}">
+
+                <div class="mb-3">
+                    <label>Nom complet</label>
+                    <input type="text" name="name" class="form-control"
+                           placeholder="Ex : Dr. Ndiaye" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Adresse email</label>
+                    <input type="email" name="email" class="form-control"
+                           placeholder="Ex : ndiaye@edu.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Spécialité</label>
+                    <input type="text" name="speciality" class="form-control"
+                           placeholder="Ex : Mathématiques" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Identifiant</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Spécialité</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.id }}</td>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.email }}</td>
+                <td>{{ teacher.speciality }}</td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('teachers.delete', teacher_id=teacher.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Confirmer la suppression ?')">
+                            Supprimer
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center">Aucun enseignant enregistré.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
