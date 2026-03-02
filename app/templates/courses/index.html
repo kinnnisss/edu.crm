@@ -1,0 +1,110 @@
+{# templates/courses/index.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">Cours</h2>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Ajouter un cours</h5>
+      <form method="POST" action="{{ url_for('courses.add') }}" class="row g-2">
+        <div class="col-md-8">
+          <input type="text" name="title" class="form-control" placeholder="Titre du cours (ex: Algorithmique)" required>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-primary w-100" type="submit">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Liste des cours</h5>
+
+      {% if courses|length == 0 %}
+        <p class="text-muted">Aucun cours pour le moment.</p>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Prof</th>
+                <th>Étudiants</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in courses %}
+              <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.title }}</td>
+
+                <td>
+                  {% if c.teacher_id %}
+                    <span class="badge bg-success">ID Prof: {{ c.teacher_id }}</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Non assigné</span>
+                  {% endif %}
+
+                  <form method="POST" action="{{ url_for('courses.assign_teacher') }}" class="mt-2">
+                    <input type="hidden" name="course_id" value="{{ c.id }}">
+                    <div class="input-group">
+                      <select class="form-select" name="teacher_id" required>
+                        <option value="" disabled selected>Choisir un prof</option>
+                        {% for t in teachers %}
+                          <option value="{{ t.id }}">{{ t.name }} ({{ t.speciality }})</option>
+                        {% endfor %}
+                      </select>
+                      <button class="btn btn-outline-primary" type="submit">Assigner</button>
+                    </div>
+                  </form>
+                </td>
+
+                <td>
+                  {% if c.student_ids|length > 0 %}
+                    <span class="badge bg-info">{{ c.student_ids|length }} étudiant(s)</span>
+                    <div class="small text-muted">IDs: {{ c.student_ids }}</div>
+                  {% else %}
+                    <span class="badge bg-secondary">Aucun</span>
+                  {% endif %}
+
+                  <form method="POST" action="{{ url_for('courses.assign_students') }}" class="mt-2">
+                    <input type="hidden" name="course_id" value="{{ c.id }}">
+
+                    <div class="border rounded p-2" style="max-height: 130px; overflow:auto;">
+                      {% for s in students %}
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="student_ids" value="{{ s.id }}"
+                                 id="s{{ c.id }}_{{ s.id }}"
+                                 {% if s.id in c.student_ids %}checked{% endif %}>
+                          <label class="form-check-label" for="s{{ c.id }}_{{ s.id }}">
+                            {{ s.name }} ({{ s.email }})
+                          </label>
+                        </div>
+                      {% endfor %}
+                    </div>
+
+                    <button class="btn btn-outline-primary mt-2" type="submit">Enregistrer</button>
+                  </form>
+                </td>
+
+                <td>
+                  <form method="POST" action="{{ url_for('courses.delete', course_id=c.id) }}"
+                        onsubmit="return confirm('Supprimer ce cours ?');">
+                    <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
