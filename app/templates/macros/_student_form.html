@@ -1,0 +1,16 @@
+<form method="POST" action="{{ url_for('courses.assign_students', course_id=course.id) }}" class="mt-2">
+  <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
+    {% for s in students %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="student_ids" value="{{ s.id }}"
+               id="s{{ course.id }}_{{ s.id }}"
+               {% if s.id in course.student_ids %}checked{% endif %}>
+        <label class="form-check-label" for="s{{ course.id }}_{{ s.id }}">
+          {{ s.name }} ({{ s.email }})
+        </label>
+      </div>
+    {% endfor %}
+  </div>
+
+  <button class="btn btn-outline-primary mt-2" type="submit">Enregistrer</button>
+</form>

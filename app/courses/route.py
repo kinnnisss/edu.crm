@@ -7,23 +7,17 @@ from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
 
 course_service = CourseService()
-
 student_service = StudentService()
 teacher_service = TeacherService()
-
 
 @courses_bp.route("/", methods=["GET"])
 def index():
     courses = course_service.listCourses()
-    students = student_service.listStudents()
-    teachers = teacher_service.listTeachers()
-    return render_template(
-        "courses/index.html",
-        courses=courses,
-        students=students,
-        teachers=teachers
-    )
+    return render_template("courses/index.html", courses=courses)
 
+@courses_bp.route("/new", methods=["GET"])
+def new():
+    return render_template("courses/create.html")
 
 @courses_bp.route("/add", methods=["POST"])
 def add():
@@ -31,61 +25,71 @@ def add():
 
     ok = course_service.addCourse(title)
     if ok:
-        flash("Cours ajouté avec succès ", "success")
+        flash("Cours ajouté avec succès", "success")
+        return redirect(url_for("courses.index"))
     else:
-        flash("Erreur: titre obligatoire ", "danger")
+        flash("Erreur: titre obligatoire", "danger")
+        return redirect(url_for("courses.new"))
 
-    return redirect(url_for("courses.index"))
+@courses_bp.route("/<int:course_id>", methods=["GET"])
+def show(course_id: int):
+    course = course_service.getCourseById(course_id)
+    if not course:
+        flash("Cours introuvable", "danger")
+        return redirect(url_for("courses.index"))
 
+    teachers = teacher_service.listTeachers()
+    students = student_service.listStudents()
+
+    return render_template(
+        "courses/show.html",
+        course=course,
+        teachers=teachers,
+        students=students
+    )
+
+@courses_bp.route("/<int:course_id>/assign-teacher", methods=["POST"])
+def assign_teacher(course_id: int):
+    teacher_id_str = request.form.get("teacher_id", "").strip()
+
+    try:
+        teacher_id = int(teacher_id_str)
+    except ValueError:
+        flash("ID prof invalide (doit être un entier)", "danger")
+        return redirect(url_for("courses.show", course_id=course_id))
+
+    ok = course_service.assignTeacher(course_id, teacher_id, teacher_service)
+    if ok:
+        flash("Prof assigné au cours", "success")
+    else:
+        flash("Erreur: cours ou prof introuvable", "danger")
+
+    return redirect(url_for("courses.show", course_id=course_id))
+
+@courses_bp.route("/<int:course_id>/assign-students", methods=["POST"])
+def assign_students(course_id: int):
+    student_ids_str_list = request.form.getlist("student_ids")
+
+    try:
+        student_ids = [int(x) for x in student_ids_str_list]
+    except ValueError:
+        flash("IDs invalides (doivent être des entiers)", "danger")
+        return redirect(url_for("courses.show", course_id=course_id))
+
+    ok = course_service.assignStudents(course_id, student_ids, student_service)
+    if ok:
+        flash("Étudiants assignés au cours", "success")
+    else:
+        flash("Erreur: au moins un étudiant introuvable ou aucune sélection", "danger")
+
+    return redirect(url_for("courses.show", course_id=course_id))
 
 @courses_bp.route("/delete/<int:course_id>", methods=["POST"])
 def delete(course_id: int):
     ok = course_service.deleteCourse(course_id)
     if ok:
-        flash("Cours supprimé ", "success")
-    else:
-        flash("Suppression impossible: cours introuvable ", "danger")
-
-    return redirect(url_for("courses.index"))
-
-
-@courses_bp.route("/assign-teacher", methods=["POST"])
-def assign_teacher():
-    course_id_str = request.form.get("course_id", "").strip()
-    teacher_id_str = request.form.get("teacher_id", "").strip()
-
-    try:
-        course_id = int(course_id_str)
-        teacher_id = int(teacher_id_str)
-    except ValueError:
-        flash("IDs invalides (doivent être des entiers) ", "danger")
+        flash("Cours supprimé", "success")
         return redirect(url_for("courses.index"))
-
-    ok = course_service.assignTeacher(course_id, teacher_id, teacher_service)
-    if ok:
-        flash("Prof assigné au cours ", "success")
     else:
-        flash("Erreur: cours ou prof introuvable ", "danger")
-
-    return redirect(url_for("courses.index"))
-
-
-@courses_bp.route("/assign-students", methods=["POST"])
-def assign_students():
-    course_id_str = request.form.get("course_id", "").strip()
-    student_ids_str_list = request.form.getlist("student_ids")
-
-    try:
-        course_id = int(course_id_str)
-        student_ids = [int(x) for x in student_ids_str_list]
-    except ValueError:
-        flash("IDs invalides (doivent être des entiers) ", "danger")
-        return redirect(url_for("courses.index"))
-
-    ok = course_service.assignStudents(course_id, student_ids, student_service)
-    if ok:
-        flash("Étudiants assignés au cours ", "success")
-    else:
-        flash("Erreur: au moins un étudiant est introuvable ou aucune sélection ", "danger")
-
-    return redirect(url_for("courses.index"))
+        flash("Suppression impossible: cours introuvable", "danger")
+        return redirect(url_for("courses.show", course_id=course_id))

@@ -1,0 +1,11 @@
+<form method="POST" action="{{ url_for('courses.assign_teacher', course_id=course.id) }}" class="mt-2">
+  <div class="input-group">
+    <select class="form-select" name="teacher_id" required>
+      <option value="" disabled selected>Choisir un prof</option>
+      {% for t in teachers %}
+        <option value="{{ t.id }}">{{ t.name }} ({{ t.speciality }})</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-primary" type="submit">Assigner</button>
+  </div>
+</form>
