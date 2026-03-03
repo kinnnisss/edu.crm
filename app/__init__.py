@@ -8,6 +8,8 @@ def create_app():
     # Blueprints
     from app.courses import courses_bp
     from app.auth import auth_bp
+    from app.teachers import teachers_bp
+    app.register_blueprint(teachers_bp, url_prefix="/teachers")
     app.register_blueprint(courses_bp, url_prefix="/courses")
     app.register_blueprint(auth_bp)
     # from app.students import students_bp

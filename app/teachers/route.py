@@ -1,11 +1,12 @@
 from flask import render_template, request, redirect, url_for, flash
-from app.teachers import teachers_bp
+from . import teachers_bp
 from app.services.teacher_service import TeacherService
 
 service = TeacherService()
 
-@teachers_bp.route('/')
+@teachers_bp.route('')
 def index():
+    
     teachers = service.listTeachers()
     return render_template('teachers/index.html', teachers=teachers)
 

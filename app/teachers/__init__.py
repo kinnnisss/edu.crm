@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-teachers_bp = Blueprint('teachers', __name__, url_prefix='/teachers')
+teachers_bp = Blueprint('teachers', __name__,template_folder="templates")
 
-from app.teachers import route
+from . import route
