@@ -13,7 +13,7 @@ def create_app():
     from app.auth import auth_bp
     app.register_blueprint(auth_bp)
     
-    # Route de test pour la racine
+    # j'ai creer cette pour le test
     @app.route('/')
     def index():
         return f"<h1>Bienvenue sur ScolarISM </h1><p><a href='/auth/login'>Se connecter</a></p>"
