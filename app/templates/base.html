@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}EDU.crm{% endblock %} — EDU.crm</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <div class="sidebar-header">
+      <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+      <span class="logo-text">EDU<span class="logo-accent">.crm</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Navigation</span>
+
+      <a href="{{ url_for('dashboard.index') }}"
+         class="nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
+        Dashboard
+      </a>
+
+      <span class="nav-section-label">Gestion</span>
+
+      <a href="{{ url_for('students.index') }}"
+         class="nav-item {% if request.endpoint and request.endpoint.startswith('students') %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-user-graduate"></i></span>
+        Étudiants
+      </a>
+
+      <a href="{{ url_for('teachers.index') }}"
+         class="nav-item {% if request.endpoint and request.endpoint.startswith('teachers') %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+        Enseignants
+      </a>
+
+      <a href="{{ url_for('courses.index') }}"
+         class="nav-item {% if request.endpoint and request.endpoint.startswith('courses') %}active{% endif %}">
+        <span class="nav-icon"><i class="fas fa-book-open"></i></span>
+        Cours
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="{{ url_for('auth.logout') }}" class="nav-item logout">
+        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+        Déconnexion
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ═══ MAIN ════════════════════════════════════════════════ -->
+  <div class="main-wrapper">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="page-title">{% block page_title %}Dashboard{% endblock %}</span>
+      </div>
+      <div class="topbar-right">
+        <div class="user-badge">
+          <div class="user-avatar">A</div>
+          Admin
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-container">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                {% if category == 'success' %}<i class="fas fa-check-circle"></i>
+                {% elif category == 'danger' %}<i class="fas fa-exclamation-circle"></i>
+                {% elif category == 'warning' %}<i class="fas fa-exclamation-triangle"></i>
+                {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

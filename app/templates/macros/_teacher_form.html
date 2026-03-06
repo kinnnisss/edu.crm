@@ -1,0 +1,16 @@
+<form method="POST" action="{{ url_for('courses.assign_teacher', course_id=course.id) }}">
+  <div class="form-group">
+    <label>Sélectionner un enseignant</label>
+    <select name="teacher_id">
+      <option value="">— Aucun enseignant —</option>
+      {% for t in teachers %}
+      <option value="{{ t.id }}" {% if course.teacher_id == t.id %}selected{% endif %}>
+        {{ t.name }} — {{ t.specialty }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary btn-sm">
+    <i class="fas fa-check"></i> Assigner
+  </button>
+</form>

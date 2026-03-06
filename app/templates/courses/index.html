@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Cours{% endblock %}
+{% block page_title %}Cours{% endblock %}
+
+{% block content %}
+
+<div class="section-header">
+  <h2>
+    <i class="fas fa-book-open" style="font-size:1.1rem;color:var(--gold)"></i>
+    Catalogue des cours
+    <span>{{ courses|length }} cours</span>
+  </h2>
+  <a href="{{ url_for('courses.new') }}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Nouveau cours
+  </a>
+</div>
+
+{% if courses %}
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Titre du cours</th>
+        <th>Enseignant</th>
+        <th>Étudiants</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td>{{ c.id }}</td>
+        <td><span class="td-main">{{ c.title }}</span></td>
+        <td>
+          {% if c.teacher_id %}
+            <span class="badge badge-green"><i class="fas fa-check" style="font-size:.6rem"></i> Assigné</span>
+          {% else %}
+            <span class="badge badge-gray">Non assigné</span>
+          {% endif %}
+        </td>
+        <td>
+          <span class="badge badge-navy">
+            <i class="fas fa-users" style="font-size:.6rem"></i>
+            {{ c.student_ids|length }}
+          </span>
+        </td>
+        <td>
+          {% if c.teacher_id and c.student_ids|length > 0 %}
+            <span class="badge badge-green">Complet</span>
+          {% elif c.teacher_id %}
+            <span class="badge badge-amber">Sans étudiants</span>
+          {% else %}
+            <span class="badge badge-rose">Incomplet</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="actions">
+            <a href="{{ url_for('courses.show', course_id=c.id) }}" class="btn btn-info btn-sm">
+              <i class="fas fa-cog"></i> Gérer
+            </a>
+            <form method="POST"
+                  action="{{ url_for('courses.delete', course_id=c.id) }}"
+                  style="display:inline"
+                  onsubmit="return confirm('Supprimer ce cours ?')">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+  <p>Aucun cours enregistré pour le moment.</p>
+  <a href="{{ url_for('courses.new') }}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Créer le premier cours
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}
