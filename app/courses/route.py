@@ -5,21 +5,37 @@ from . import courses_bp
 from app.services.course_service import CourseService
 from app.services.student_service import StudentService
 from app.services.teacher_service import TeacherService
+from app.auth.utils import login_required
+from app.auth.utils import paginate
 
 course_service = CourseService()
 student_service = StudentService()
 teacher_service = TeacherService()
 
+
 @courses_bp.route("/", methods=["GET"])
+@login_required
 def index():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 3, type=int)
+
     courses = course_service.listCourses()
-    return render_template("courses/index.html", courses=courses)
+    courses_paginated, pagination_info = paginate(courses, page, per_page)
+
+    return render_template(
+        'courses/index.html',
+        courses=courses_paginated,
+        pagination=pagination_info
+    )
+
 
 @courses_bp.route("/new", methods=["GET"])
+@login_required
 def new():
     return render_template("courses/create.html")
 
 @courses_bp.route("/add", methods=["POST"])
+@login_required
 def add():
     title = request.form.get("title", "").strip()
 
@@ -32,6 +48,7 @@ def add():
         return redirect(url_for("courses.new"))
 
 @courses_bp.route("/<int:course_id>", methods=["GET"])
+@login_required
 def show(course_id: int):
     course = course_service.getCourseById(course_id)
     if not course:
@@ -49,6 +66,7 @@ def show(course_id: int):
     )
 
 @courses_bp.route("/<int:course_id>/assign-teacher", methods=["POST"])
+@login_required
 def assign_teacher(course_id: int):
     teacher_id_str = request.form.get("teacher_id", "").strip()
 
@@ -67,6 +85,7 @@ def assign_teacher(course_id: int):
     return redirect(url_for("courses.show", course_id=course_id))
 
 @courses_bp.route("/<int:course_id>/assign-students", methods=["POST"])
+@login_required
 def assign_students(course_id: int):
     student_ids_str_list = request.form.getlist("student_ids")
 
@@ -85,6 +104,7 @@ def assign_students(course_id: int):
     return redirect(url_for("courses.show", course_id=course_id))
 
 @courses_bp.route("/delete/<int:course_id>", methods=["POST"])
+@login_required
 def delete(course_id: int):
     ok = course_service.deleteCourse(course_id)
     if ok:

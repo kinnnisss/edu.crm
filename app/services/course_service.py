@@ -89,9 +89,6 @@ class CourseService:
             if sid not in cleaned:
                 cleaned.append(sid)
 
-        if len(cleaned) == 0:
-            return False
-
         for sid in cleaned:
             if student_service.getStudentById(sid) is None:
                 return False
