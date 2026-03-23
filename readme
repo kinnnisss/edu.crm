@@ -1,4 +1,6 @@
 Comment lancer l'application: 
 Après avoir télécharger le code depuis github, créer un environnement virtuel à la racine du dossier principal et installer les dependances:
 -flask avec ##pip install flask
-Au niveau du dossier principal lancer le projet
+Au niveau du dossier principal lancer le projet avec la commande suivante: ##flask run
+Aller à l'endpoint suivant: http://127.0.0.1:5000/auth/login pour se connecter à l'application.
+Les identifiants de connexion sont les suivants: admin / admin123

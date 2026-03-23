@@ -37,7 +37,7 @@ class CourseService:
         self.next_id = 6
 
     def listCourses(self) -> list:
-        return self.courses
+        return sorted(self.courses, key=lambda course: course["id"], reverse=True)
 
     def getCourseById(self, course_id: int) -> dict | None:
         for c in self.courses:

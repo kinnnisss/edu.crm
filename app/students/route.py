@@ -1,60 +1,87 @@
 from flask import render_template, request, redirect, url_for, flash
 from . import students_bp
+from app.services.student_service import StudentService
 from app.auth.utils import login_required
-from app.services.student_service import (
-    list_students, create_student, update_student, delete_student, get_student
-)
+from app.auth.utils import paginate
 
+service = StudentService()
 
 @students_bp.route('/')
 @login_required
-def index():
-    students = list_students()
-    return render_template('students/index.html', students=students)
+def home():
+    return redirect(url_for('students.list_students'))
 
-
-@students_bp.route('/create', methods=['POST'])
+@students_bp.route('/students')
 @login_required
-def create():
+def list_students():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 3, type=int)
+    search = request.args.get('search', '').strip()
+    major = request.args.get('major', '').strip()
+
+    students = service.searchStudents(search=search, major=major)
+    students_paginated, pagination_info = paginate(students, page, per_page)
+
+    return render_template(
+        'students/index.html',
+        students=students_paginated,
+        pagination=pagination_info,
+        search=search,
+        selected_major=major,
+        majors=service.getMajors()
+    )
+
+@students_bp.route('/students/<int:id>')
+@login_required
+def show_student(id):
+    student = service.getStudentById(id)
+
+    if not student:
+        flash("Étudiant introuvable.", "danger")
+        return redirect(url_for('students.list_students'))
+
+    return render_template('students/show.html', student=student)
+
+@students_bp.route('/students/add', methods=['POST'])
+@login_required
+def add_student():
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
     major = request.form.get('major', '').strip()
 
-    if not name or not email or not major:
-        flash('Tous les champs sont obligatoires.', 'danger')
-        return redirect(url_for('students.index'))
+    action = service.addStudent(name, email, major)
 
-    create_student(name, email, major)
-    flash(f'Étudiant "{name}" ajouté avec succès.', 'success')
-    return redirect(url_for('students.index'))
+    if action:
+        flash("Étudiant ajouté avec succès !", "success")
+    else:
+        flash("Erreur : champs manquants ou email déjà utilisé.", "danger")
 
+    return redirect(url_for('students.list_students'))
 
-@students_bp.route('/update/<int:student_id>', methods=['POST'])
+@students_bp.route('/students/edit/<int:id>', methods=['POST'])
 @login_required
-def update(student_id):
+def edit_student(id):
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
     major = request.form.get('major', '').strip()
 
-    if not name or not email or not major:
-        flash('Tous les champs sont obligatoires.', 'danger')
-        return redirect(url_for('students.index'))
+    action = service.updateStudent(id, name, email, major)
 
-    result = update_student(student_id, name, email, major)
-    if result:
-        flash(f'Étudiant mis à jour avec succès.', 'success')
+    if action:
+        flash("Étudiant modifié avec succès !", "success")
     else:
-        flash('Étudiant introuvable.', 'danger')
+        flash("Erreur : données invalides ou email déjà utilisé.", "danger")
 
-    return redirect(url_for('students.index'))
+    return redirect(url_for('students.list_students'))
 
-
-@students_bp.route('/delete/<int:student_id>', methods=['POST'])
+@students_bp.route('/students/delete/<int:id>')
 @login_required
-def delete(student_id):
-    result = delete_student(student_id)
-    if result:
-        flash('Étudiant supprimé avec succès.', 'success')
+def delete_student(id):
+    action = service.deleteStudent(id)
+
+    if action:
+        flash("Étudiant supprimé avec succès.", "success")
     else:
-        flash('Étudiant introuvable.', 'danger')
-    return redirect(url_for('students.index'))
+        flash("Étudiant introuvable.", "danger")
+
+    return redirect(url_for('students.list_students'))

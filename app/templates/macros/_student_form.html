@@ -1,23 +1,32 @@
 <form method="POST" action="{{ url_for('courses.assign_students', course_id=course.id) }}">
-  <div class="form-group">
-    <label>Sélectionner les étudiants</label>
-    <div class="checkbox-list">
-      {% for s in students %}
-      <label class="checkbox-item">
-        <input type="checkbox" name="student_ids" value="{{ s.id }}"
-               {% if s.id in course.student_ids %}checked{% endif %} />
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:.84rem;color:var(--text)">{{ s.name }}</div>
-          <div style="font-size:.73rem;color:var(--text-3)">{{ s.email }}</div>
+  <div class="mb-6">
+    <label class="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">Sélectionner les étudiants</label>
+    <div class="max-h-80 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 divide-y divide-slate-200">
+      {% if students %}
+        {% for s in students %}
+        <label class="flex items-center gap-3 px-4 py-4 cursor-pointer transition hover:bg-white">
+          <input type="checkbox" name="student_ids" value="{{ s.id }}"
+                 {% if s.id in course.student_ids %}checked{% endif %} 
+                 class="h-4 w-4 rounded border-slate-300 cursor-pointer accent-slate-900" />
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-slate-900">{{ s.name }}</p>
+            <p class="text-xs text-slate-500">{{ s.email }}</p>
+          </div>
+          {% if s.id in course.student_ids %}
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 shrink-0">
+              <i class="fas fa-check text-xs"></i>
+            </span>
+          {% endif %}
+        </label>
+        {% endfor %}
+      {% else %}
+        <div class="px-4 py-6 text-center text-sm text-slate-500">
+          Aucun étudiant disponible
         </div>
-        {% if s.id in course.student_ids %}
-          <span class="badge badge-green" style="font-size:.65rem">Inscrit</span>
-        {% endif %}
-      </label>
-      {% endfor %}
+      {% endif %}
     </div>
   </div>
-  <button type="submit" class="btn btn-accent btn-sm">
+  <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800 text-sm">
     <i class="fas fa-users"></i> Mettre à jour
   </button>
 </form>

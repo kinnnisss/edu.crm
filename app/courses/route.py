@@ -18,14 +18,23 @@ teacher_service = TeacherService()
 def index():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 3, type=int)
+    search = request.args.get('search', '').strip()
 
     courses = course_service.listCourses()
+
+    if search:
+        courses = [
+            course for course in courses
+            if search.lower() in course["title"].lower()
+        ]
+
     courses_paginated, pagination_info = paginate(courses, page, per_page)
 
     return render_template(
         'courses/index.html',
         courses=courses_paginated,
-        pagination=pagination_info
+        pagination=pagination_info,
+        search=search
     )
 
 

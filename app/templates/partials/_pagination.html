@@ -1,95 +1,75 @@
 {% if pagination and pagination.total_pages > 1 %}
-<div class="mt-6 flex justify-center">
-    <nav aria-label="Pagination">
-        <ul class="flex items-center gap-2 list-none m-0 p-0">
+<div class="mt-8 flex justify-center">
+    <nav class="flex items-center gap-2">
 
-            <!-- Précédent -->
-            {% if pagination.has_prev %}
-            <li>
-                <a href="{{ url_for(request.endpoint, page=pagination.prev_page, per_page=pagination.per_page) }}"
-                   class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-                    Précédent
-                </a>
-            </li>
+        {% set current_search = request.args.get('search', '') %}
+        {% set current_major = request.args.get('major', '') %}
+        {% set current_speciality = request.args.get('speciality', '') %}
+
+        <!-- Previous -->
+        {% if pagination.has_prev %}
+        <a href="{{ url_for(request.endpoint, page=pagination.prev_page, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
+           class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
+            Précédent
+        </a>
+        {% else %}
+        <span class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-slate-50 font-semibold text-slate-400 cursor-not-allowed">
+            Précédent
+        </span>
+        {% endif %}
+
+        <!-- Page Range -->
+        {% set start_page = [1, pagination.page - 2]|max %}
+        {% set end_page = [pagination.total_pages, pagination.page + 2]|min %}
+
+        <!-- First Page + Ellipsis -->
+        {% if start_page > 1 %}
+        <a href="{{ url_for(request.endpoint, page=1, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
+           class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
+            1
+        </a>
+        {% if start_page > 2 %}
+        <span class="inline-flex items-center px-2 text-slate-500">...</span>
+        {% endif %}
+        {% endif %}
+
+        <!-- Pages -->
+        {% for p in range(start_page, end_page + 1) %}
+            {% if p == pagination.page %}
+            <span class="inline-flex items-center px-3 py-2 rounded-lg bg-slate-900 font-semibold text-white shadow">
+                {{ p }}
+            </span>
             {% else %}
-            <li>
-                <span class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed">
-                    Précédent
-                </span>
-            </li>
+            <a href="{{ url_for(request.endpoint, page=p, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
+               class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
+                {{ p }}
+            </a>
             {% endif %}
+        {% endfor %}
 
-            <!-- Définir la plage -->
-            {% set start_page = [1, pagination.page - 2]|max %}
-            {% set end_page = [pagination.total_pages, pagination.page + 2]|min %}
-
-            <!-- Première page + ... -->
-            {% if start_page > 1 %}
-            <li>
-                <a href="{{ url_for(request.endpoint, page=1, per_page=pagination.per_page) }}"
-                   class="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-                    1
-                </a>
-            </li>
-
-            {% if start_page > 2 %}
-            <li>
-                <span class="inline-flex items-center px-3 py-2 text-gray-500">...</span>
-            </li>
+        <!-- Ellipsis + Last Page -->
+        {% if end_page < pagination.total_pages %}
+            {% if end_page < pagination.total_pages - 1 %}
+            <span class="inline-flex items-center px-2 text-slate-500">...</span>
             {% endif %}
-            {% endif %}
+            <a href="{{ url_for(request.endpoint, page=pagination.total_pages, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
+               class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
+                {{ pagination.total_pages }}
+            </a>
+        {% endif %}
 
-            <!-- Pages -->
-            {% for p in range(start_page, end_page + 1) %}
-                {% if p == pagination.page %}
-                <li>
-                    <span class="inline-flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white font-medium shadow">
-                        {{ p }}
-                    </span>
-                </li>
-                {% else %}
-                <li>
-                    <a href="{{ url_for(request.endpoint, page=p, per_page=pagination.per_page) }}"
-                       class="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-                        {{ p }}
-                    </a>
-                </li>
-                {% endif %}
-            {% endfor %}
+        <!-- Next -->
+        {% if pagination.has_next %}
+        <a href="{{ url_for(request.endpoint, page=pagination.next_page, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
+           class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
+            Suivant
+        </a>
+        {% else %}
+        <span class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-slate-50 font-semibold text-slate-400 cursor-not-allowed">
+            Suivant
+        </span>
+        {% endif %}
 
-            <!-- ... + Dernière page -->
-            {% if end_page < pagination.total_pages %}
-                {% if end_page < pagination.total_pages - 1 %}
-                <li>
-                    <span class="inline-flex items-center px-3 py-2 text-gray-500">...</span>
-                </li>
-                {% endif %}
-
-                <li>
-                    <a href="{{ url_for(request.endpoint, page=pagination.total_pages, per_page=pagination.per_page) }}"
-                       class="inline-flex items-center px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-                        {{ pagination.total_pages }}
-                    </a>
-                </li>
-            {% endif %}
-
-            <!-- Suivant -->
-            {% if pagination.has_next %}
-            <li>
-                <a href="{{ url_for(request.endpoint, page=pagination.next_page, per_page=pagination.per_page) }}"
-                   class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-                    Suivant
-                </a>
-            </li>
-            {% else %}
-            <li>
-                <span class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed">
-                    Suivant
-                </span>
-            </li>
-            {% endif %}
-
-        </ul>
     </nav>
 </div>
 {% endif %}

@@ -1,33 +1,36 @@
 {% extends 'base.html' %}
 {% block title %}Nouveau cours{% endblock %}
-{% block page_title %}Nouveau cours{% endblock %}
 
 {% block content %}
 
-<div class="section-header">
-  <h2>
-    <i class="fas fa-plus" style="font-size:1rem;color:var(--gold)"></i>
-    Créer un cours
-  </h2>
-  <a href="{{ url_for('courses.index') }}" class="btn btn-secondary">
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-3xl font-black text-slate-900">Créer un cours</h1>
+    <p class="mt-2 text-sm text-slate-600">Ajouter un nouveau cours au catalogue</p>
+  </div>
+  <a href="{{ url_for('courses.index') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50">
     <i class="fas fa-arrow-left"></i> Retour
   </a>
 </div>
 
-<div style="max-width:540px">
-  <div class="dash-card">
+<div class="max-w-2xl">
+  <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
     <form method="POST" action="{{ url_for('courses.add') }}">
 
-      <div class="form-group">
-        <label>Titre du cours</label>
-        <input type="text" name="title" placeholder="Ex : Algorithmique avancée" required />
+      <div class="mb-6">
+        <label class="block text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">Titre du cours</label>
+        <input type="text" name="title" placeholder="Ex : Algorithmique avancée"
+               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 placeholder-slate-400 transition focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+               required />
       </div>
 
-      <div class="form-actions" style="padding-top:6px">
-        <button type="submit" class="btn btn-primary">
+      <div class="flex gap-3 pt-4">
+        <button type="submit" class="flex-1 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
           <i class="fas fa-check"></i> Créer le cours
         </button>
-        <a href="{{ url_for('courses.index') }}" class="btn btn-secondary">Annuler</a>
+        <a href="{{ url_for('courses.index') }}" class="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3 text-center font-semibold text-slate-700 transition hover:bg-slate-50">
+          Annuler
+        </a>
       </div>
 
     </form>

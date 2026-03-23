@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}Enseignants{% endblock %}
+{% block title %}Étudiants{% endblock %}
 
 {% block content %}
 
 <div class="mb-8 flex items-center justify-between">
   <div>
-    <h1 class="text-3xl font-black text-slate-900">Enseignants</h1>
+    <h1 class="text-3xl font-black text-slate-900">Étudiants</h1>
     <p class="mt-2 text-sm text-slate-600">
-      {{ pagination.total if pagination is defined else teachers|length }} enseignants enregistrés
+      {{ pagination.total if pagination is defined else students|length }} étudiants enregistrés
     </p>
   </div>
-  <button onclick="document.getElementById('modal-create-teacher').style.display='flex'"
+
+  <button onclick="document.getElementById('modal-create-student').style.display='flex'"
           class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
     <i class="fas fa-plus"></i> Ajouter
   </button>
 </div>
 
 <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-  <form method="GET" action="{{ url_for('teachers.index') }}" class="grid grid-cols-1 gap-4 md:grid-cols-4">
+  <form method="GET" action="{{ url_for('students.list_students') }}" class="grid grid-cols-1 gap-4 md:grid-cols-4">
 
     <div class="md:col-span-2">
       <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Recherche</label>
@@ -29,12 +30,12 @@
     </div>
 
     <div>
-      <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Spécialité</label>
-      <select name="speciality"
+      <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Filière</label>
+      <select name="major"
               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
         <option value="">Toutes</option>
-        {% for sp in specialities %}
-          <option value="{{ sp }}" {% if selected_speciality == sp %}selected{% endif %}>{{ sp }}</option>
+        {% for m in majors %}
+          <option value="{{ m }}" {% if selected_major == m %}selected{% endif %}>{{ m }}</option>
         {% endfor %}
       </select>
     </div>
@@ -44,7 +45,7 @@
               class="flex-1 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
         <i class="fas fa-search"></i> Rechercher
       </button>
-      <a href="{{ url_for('teachers.index') }}"
+      <a href="{{ url_for('students.list_students') }}"
          class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
         Reset
       </a>
@@ -53,44 +54,51 @@
   </form>
 </div>
 
-{% if teachers %}
+{% if students %}
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
   <table class="w-full">
     <thead>
       <tr class="border-b border-slate-200 bg-slate-50">
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">#</th>
-        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Enseignant</th>
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Étudiant</th>
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Email</th>
-        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Spécialité</th>
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Filière</th>
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-slate-200">
-      {% for t in teachers %}
-      <tr class="transition hover:bg-slate-50">
-        <td class="px-6 py-4 text-sm font-semibold text-slate-600">{{ t.id }}</td>
 
-        <td class="px-6 py-4 text-sm">
+    <tbody class="divide-y divide-slate-200">
+      {% for s in students %}
+      <tr class="transition hover:bg-slate-50">
+        <td class="px-6 py-4 text-sm font-semibold text-slate-600">{{ s.id }}</td>
+
+        <td class="px-6 py-4">
           <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg font-bold text-white
-              {% set colors = ['bg-slate-900', 'bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-900', 'bg-gradient-to-br from-blue-500 to-indigo-600', 'bg-gradient-to-br from-emerald-400 to-teal-500', 'bg-gradient-to-br from-rose-500 to-pink-500'] %}
-              {{ colors[loop.index0 % 5] }}">
-              {{ t.name[0]|upper }}
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 font-bold text-white">
+              <i class="fas fa-user-graduate"></i>
             </div>
             <div>
-              <p class="font-semibold text-slate-900">{{ t.name }}</p>
-              <p class="text-xs text-slate-500">ID enseignant #{{ t.id }}</p>
+              <p class="text-sm font-semibold text-slate-900">{{ s.name }}</p>
+              <p class="text-xs text-slate-500">Matricule interne #{{ s.id }}</p>
             </div>
           </div>
         </td>
 
-        <td class="px-6 py-4 text-sm text-slate-600">{{ t.email }}</td>
+        <td class="px-6 py-4 text-sm font-medium text-slate-700">
+          {{ s.email }}
+        </td>
 
         <td class="px-6 py-4 text-sm">
-          <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-            {{ t.speciality }}
-          </span>
+          {% if s.major is defined and s.major %}
+            <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+              <i class="fas fa-book text-xs"></i> {{ s.major }}
+            </span>
+          {% else %}
+            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+              Non renseigné
+            </span>
+          {% endif %}
         </td>
 
         <td class="px-6 py-4 text-sm">
@@ -101,59 +109,58 @@
 
         <td class="px-6 py-4 text-sm">
           <div class="flex items-center gap-2">
-            <a href="{{ url_for('teachers.show', teacher_id=t.id) }}"
+            <a href="{{ url_for('students.show_student', id=s.id) }}"
                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-50">
               <i class="fas fa-eye"></i>
             </a>
 
             <button type="button"
-                    onclick="document.getElementById('modal-edit-teacher-{{ t.id }}').style.display='flex'"
+                    onclick="document.getElementById('modal-edit-student-{{ s.id }}').style.display='flex'"
                     class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 font-semibold text-amber-700 transition hover:bg-amber-100">
               <i class="fas fa-pen"></i>
             </button>
 
-            <form method="POST" action="{{ url_for('teachers.delete', teacher_id=t.id) }}" style="display:inline"
-                  onsubmit="return confirm('Supprimer cet enseignant ?')">
-              <button type="submit"
-                      class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 font-semibold text-rose-700 transition hover:bg-rose-100">
-                <i class="fas fa-trash"></i>
-              </button>
-            </form>
+            <a href="{{ url_for('students.delete_student', id=s.id) }}"
+               onclick="return confirm('Supprimer cet étudiant ?')"
+               class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 font-semibold text-rose-700 transition hover:bg-rose-100">
+              <i class="fas fa-trash"></i>
+            </a>
           </div>
         </td>
       </tr>
 
-      <div id="modal-edit-teacher-{{ t.id }}"
-           class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
-     style="display:none">
+      <!-- Modal modification étudiant -->
+      <div id="modal-edit-student-{{ s.id }}"
+           class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+           style="display:none">
 
-  <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl"
-       onclick="event.stopPropagation()">
+        <div class="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-2xl"
+             onclick="event.stopPropagation()">
 
           <div class="flex items-center justify-between border-b border-slate-100 px-8 py-6">
             <h3 class="flex items-center gap-3 text-xl font-bold text-slate-900">
               <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
                 <i class="fas fa-pen"></i>
               </span>
-              Modifier l’enseignant
+              Modifier l’étudiant
             </h3>
 
             <button type="button"
-                    onclick="document.getElementById('modal-edit-teacher-{{ t.id }}').style.display='none'"
+                    onclick="document.getElementById('modal-edit-student-{{ s.id }}').style.display='none'"
                     class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100">
               <i class="fas fa-times"></i>
             </button>
           </div>
 
           <div class="px-8 py-6">
-            <form method="POST" action="{{ url_for('teachers.edit', teacher_id=t.id) }}">
+            <form method="POST" action="{{ url_for('students.edit_student', id=s.id) }}">
 
               <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div class="md:col-span-2">
                   <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">Nom complet</label>
                   <input type="text"
                          name="name"
-                         value="{{ t.name }}"
+                         value="{{ s.name }}"
                          required
                          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
                 </div>
@@ -162,18 +169,20 @@
                   <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">Adresse email</label>
                   <input type="email"
                          name="email"
-                         value="{{ t.email }}"
+                         value="{{ s.email }}"
                          required
                          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
                 </div>
 
                 <div class="md:col-span-2">
-                  <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">Spécialité</label>
-                  <input type="text"
-                         name="speciality"
-                         value="{{ t.speciality }}"
-                         required
-                         class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
+                  <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">Filière</label>
+                  <select name="major"
+                          required
+                          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
+                    {% for m in majors %}
+                      <option value="{{ m }}" {% if s.major == m %}selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                  </select>
                 </div>
               </div>
 
@@ -184,7 +193,7 @@
                 </button>
 
                 <button type="button"
-                        onclick="document.getElementById('modal-edit-teacher-{{ t.id }}').style.display='none'"
+                        onclick="document.getElementById('modal-edit-student-{{ s.id }}').style.display='none'"
                         class="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50">
                   Annuler
                 </button>
@@ -206,18 +215,20 @@
 {% else %}
 <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-8 py-16 text-center">
   <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-    <i class="fas fa-chalkboard-user text-2xl"></i>
+    <i class="fas fa-user-graduate text-2xl"></i>
   </div>
-  <h3 class="text-xl font-bold text-slate-900">Aucun enseignant enregistré</h3>
-  <!-- <p class="mt-2 text-sm text-slate-600">Ajoutez votre premier enseignant.</p>
-  <button onclick="document.getElementById('modal-create-teacher').style.display='flex'"
+  <h3 class="text-xl font-bold text-slate-900">Aucun étudiant enregistré</h3>
+  <p class="mt-2 text-sm text-slate-600">Commencez par ajouter votre premier étudiant.</p>
+
+  <button onclick="document.getElementById('modal-create-student').style.display='flex'"
           class="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
-    <i class="fas fa-plus"></i> Ajouter le premier enseignant
-  </button> -->
+    <i class="fas fa-plus"></i> Ajouter un étudiant
+  </button>
 </div>
 {% endif %}
 
-<div id="modal-create-teacher"
+<!-- Modal création étudiant -->
+<div id="modal-create-student"
      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
      style="display:none">
 
@@ -227,12 +238,12 @@
     <div class="flex items-center justify-between border-b border-slate-100 px-8 py-6">
       <h3 class="flex items-center gap-3 text-xl font-bold text-slate-900">
         <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
-          <i class="fas fa-plus"></i>
+          <i class="fas fa-user-plus"></i>
         </span>
-        Nouvel enseignant
+        Nouvel étudiant
       </h3>
 
-      <button onclick="document.getElementById('modal-create-teacher').style.display='none'"
+      <button onclick="document.getElementById('modal-create-student').style.display='none'"
               class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100">
         <i class="fas fa-times"></i>
       </button>
@@ -241,11 +252,11 @@
     <div class="px-8 py-6">
       <div class="mb-6">
         <p class="text-sm text-slate-500">
-          Renseignez les informations principales de l’enseignant pour l’ajouter à la plateforme.
+          Renseignez les informations académiques de l’étudiant pour l’ajouter au système.
         </p>
       </div>
 
-      <form method="POST" action="{{ url_for('teachers.create') }}">
+      <form method="POST" action="{{ url_for('students.add_student') }}">
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div class="md:col-span-2">
@@ -254,9 +265,9 @@
             </label>
             <input type="text"
                    name="name"
-                   placeholder="Ex : Dr. Ndiaye"
+                   placeholder="Ex : Aminata Ndiaye"
                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 placeholder-slate-400 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
-                   required />
+                   required>
           </div>
 
           <div class="md:col-span-2">
@@ -265,31 +276,34 @@
             </label>
             <input type="email"
                    name="email"
-                   placeholder="Ex : ndiaye@edu.com"
+                   placeholder="Ex : etudiant@email.com"
                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 placeholder-slate-400 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
-                   required />
+                   required>
           </div>
 
           <div class="md:col-span-2">
             <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">
-              Spécialité
+              Filière
             </label>
-            <input type="text"
-                   name="speciality"
-                   placeholder="Ex : Mathématiques"
-                   class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 placeholder-slate-400 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
-                   required />
+            <select name="major"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
+                    required>
+              <option value="">Sélectionner une filière</option>
+              <option value="Informatique">Informatique</option>
+              <option value="Réseaux">Réseaux</option>
+              <option value="Génie Logiciel">Génie Logiciel</option>
+            </select>
           </div>
         </div>
 
         <div class="mt-8 flex gap-3 pt-4">
           <button type="submit"
                   class="flex-1 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
-            <i class="fas fa-check"></i> Ajouter
+            <i class="fas fa-check"></i> Enregistrer
           </button>
 
           <button type="button"
-                  onclick="document.getElementById('modal-create-teacher').style.display='none'"
+                  onclick="document.getElementById('modal-create-student').style.display='none'"
                   class="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50">
             Annuler
           </button>
@@ -301,13 +315,13 @@
 </div>
 
 <script>
-  document.getElementById('modal-create-teacher').addEventListener('click', function(e) {
+  document.getElementById('modal-create-student').addEventListener('click', function(e) {
     if (e.target === this) {
       this.style.display = 'none';
     }
   });
 
-  document.querySelectorAll('[id^="modal-edit-teacher-"]').forEach(function(modal) {
+  document.querySelectorAll('[id^="modal-edit-student-"]').forEach(function(modal) {
     modal.addEventListener('click', function(e) {
       if (e.target === this) {
         this.style.display = 'none';

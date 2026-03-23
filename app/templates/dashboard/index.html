@@ -1,179 +1,272 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 
-<!-- ═══ STAT CARDS ════════════════════════════════════════════ -->
-<div class="stats-grid">
+<div class="space-y-8">
 
-  <div class="stat-card stat-blue">
-    <div class="stat-top">
-      <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
-      <span class="stat-trend"><i class="fas fa-circle" style="font-size:.4rem"></i> Actifs</span>
-    </div>
-    <div class="stat-number">{{ total_students }}</div>
-    <div class="stat-label">Étudiants inscrits</div>
-  </div>
-
-  <div class="stat-card stat-green">
-    <div class="stat-top">
-      <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-      <span class="stat-trend"><i class="fas fa-circle" style="font-size:.4rem"></i> Actifs</span>
-    </div>
-    <div class="stat-number">{{ total_teachers }}</div>
-    <div class="stat-label">Enseignants</div>
-  </div>
-
-  <div class="stat-card stat-amber">
-    <div class="stat-top">
-      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
-      <span class="stat-trend"><i class="fas fa-circle" style="font-size:.4rem"></i> En cours</span>
-    </div>
-    <div class="stat-number">{{ total_courses }}</div>
-    <div class="stat-label">Cours disponibles</div>
-  </div>
-
-</div>
-
-<!-- ═══ MAIN GRID ════════════════════════════════════════════ -->
-<div class="dashboard-grid">
-
-  <!-- Accès rapide + Vue d'ensemble -->
-  <div class="dash-card">
-
-    <div class="dash-card-header">
-      <div class="dash-card-title">
-        <span class="title-dot dot-navy"></span>
-        Accès rapide
-      </div>
-    </div>
-
-    <div class="quick-links">
-      <a href="{{ url_for('students.index') }}" class="quick-link-card ql-navy">
-        <div class="quick-link-icon"><i class="fas fa-user-graduate"></i></div>
-        <div class="ql-text">
-          <span class="ql-label">Étudiants</span>
-          <span class="ql-sub">Gérer les inscriptions</span>
-        </div>
-      </a>
-      <a href="{{ url_for('teachers.index') }}" class="quick-link-card ql-gold">
-        <div class="quick-link-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-        <div class="ql-text">
-          <span class="ql-label">Enseignants</span>
-          <span class="ql-sub">Gérer les profils</span>
-        </div>
-      </a>
-      <a href="{{ url_for('courses.index') }}" class="quick-link-card ql-blue">
-        <div class="quick-link-icon"><i class="fas fa-book-open"></i></div>
-        <div class="ql-text">
-          <span class="ql-label">Cours</span>
-          <span class="ql-sub">Gérer le catalogue</span>
-        </div>
-      </a>
-    </div>
-
-    <!-- Vue d'ensemble -->
-    <div style="margin-top: 28px;">
-      <div class="dash-card-header" style="margin-bottom:18px">
-        <div class="dash-card-title">
-          <span class="title-dot dot-gold"></span>
-          Vue d'ensemble
-        </div>
-      </div>
-      <div class="prog-list">
-        <div class="prog-item">
-          <div class="prog-top">
-            <span class="prog-label">
-              <i class="fas fa-user-graduate" style="color:var(--blue);font-size:.8rem"></i>
-              Étudiants
-            </span>
-            <span class="prog-val">{{ total_students }} inscrits</span>
-          </div>
-          <div class="prog-bar">
-            <div class="prog-fill fill-navy"
-                 style="width:{% if total_students > 0 %}{% set p = [total_students*10,100]|min %}{{ p }}{% else %}4{% endif %}%">
+    <!-- Welcome Header -->
+    <section class="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-white to-blue-50"></div>
+        <div class="relative px-8 py-10 md:px-12 md:py-12">
+            <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                <div class="max-w-2xl">
+                    <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">
+                        <i class="fas fa-chart-line text-xs"></i>
+                        Tableau de bord administratif
+                    </div>
+                    <h1 class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
+                        Bienvenue
+                    </h1>
+                    <p class="mt-4 text-lg leading-8 text-slate-600">
+                        Gérez l'ensemble de votre institution depuis une interface claire, moderne et intuitive.
+                    </p>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="prog-item">
-          <div class="prog-top">
-            <span class="prog-label">
-              <i class="fas fa-chalkboard-teacher" style="color:var(--gold);font-size:.8rem"></i>
-              Enseignants
-            </span>
-            <span class="prog-val">{{ total_teachers }} actifs</span>
-          </div>
-          <div class="prog-bar">
-            <div class="prog-fill fill-gold"
-                 style="width:{% if total_teachers > 0 %}{% set p = [total_teachers*15,100]|min %}{{ p }}{% else %}4{% endif %}%">
+    </section>
+
+    <!-- Stats Cards Grid -->
+    <section class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        
+        <!-- Students Stat -->
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:shadow-md hover:-translate-y-1">
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
+                    <i class="fas fa-user-graduate text-xl"></i>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    Actifs
+                </span>
             </div>
-          </div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-slate-500">Étudiants inscrits</p>
+            <p class="mt-3 text-5xl font-black text-slate-900">{{ total_students }}</p>
+            <p class="mt-2 text-sm text-slate-600">Nombre total d'étudiants enregistrés.</p>
         </div>
-        <div class="prog-item">
-          <div class="prog-top">
-            <span class="prog-label">
-              <i class="fas fa-book-open" style="color:var(--blue-2);font-size:.8rem"></i>
-              Cours
-            </span>
-            <span class="prog-val">{{ total_courses }} disponibles</span>
-          </div>
-          <div class="prog-bar">
-            <div class="prog-fill fill-blue"
-                 style="width:{% if total_courses > 0 %}{% set p = [total_courses*12,100]|min %}{{ p }}{% else %}4{% endif %}%">
+
+        <!-- Teachers Stat -->
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:shadow-md hover:-translate-y-1">
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-900 shadow-md">
+                    <i class="fas fa-chalkboard-user text-xl"></i>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                    Disponibles
+                </span>
             </div>
-          </div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-slate-500">Enseignants</p>
+            <p class="mt-3 text-5xl font-black text-slate-900">{{ total_teachers }}</p>
+            <p class="mt-2 text-sm text-slate-600">Disponibilité complète.</p>
         </div>
-      </div>
-    </div>
 
-  </div>
-
-  <!-- Derniers cours -->
-  <div class="dash-card">
-    <div class="dash-card-header">
-      <div class="dash-card-title">
-        <span class="title-dot dot-blue"></span>
-        Derniers cours
-      </div>
-      <a href="{{ url_for('courses.index') }}" class="btn btn-secondary btn-sm">
-        Voir tout
-      </a>
-    </div>
-
-    {% if courses %}
-    <div class="mini-list">
-      {% set av = ['av-1','av-2','av-3','av-4','av-5'] %}
-      {% for c in courses[-5:] | reverse %}
-      <div class="mini-item">
-        <div class="mini-avatar {{ av[loop.index0 % 5] }}">
-          <i class="fas fa-book" style="font-size:.72rem"></i>
+        <!-- Courses Stat -->
+        <div class="group rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:shadow-md hover:-translate-y-1 md:col-span-2 lg:col-span-1">
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md">
+                    <i class="fas fa-book-open text-xl"></i>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                    <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                    Catalogue
+                </span>
+            </div>
+            <p class="text-sm font-semibold uppercase tracking-wider text-slate-500">Cours disponibles</p>
+            <p class="mt-3 text-5xl font-black text-slate-900">{{ total_courses }}</p>
+            <p class="mt-2 text-sm text-slate-600">Suivi du catalogue.</p>
         </div>
-        <div class="mini-info">
-          <div class="mini-name">{{ c.title }}</div>
-          <div class="mini-sub">{{ c.student_ids|length }} étudiant(s)</div>
+
+    </section>
+
+    <!-- Main Grid -->
+    <section class="grid grid-cols-1 gap-8 xl:grid-cols-3">
+
+        <!-- Left Column -->
+        <div class="xl:col-span-2 space-y-8">
+
+            <!-- Quick Access -->
+            <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                            <span class="h-3 w-3 rounded-full bg-slate-900"></span>
+                            Accès rapide
+                        </h2>
+                        <p class="mt-2 text-sm text-slate-600">Modules principaux.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <a href="{{ url_for('students.list_students') }}"
+                       class="group flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:shadow-md hover:-translate-y-1 hover:bg-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Étudiants</h3>
+                        <p class="mt-2 text-sm text-slate-600">Gérer les inscriptions.</p>
+                        <div class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+                            Accéder <i class="fas fa-arrow-right text-xs transition group-hover:translate-x-1"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('teachers.index') }}"
+                       class="group flex flex-col rounded-2xl border border-amber-100 bg-amber-50/50 p-6 transition hover:shadow-md hover:-translate-y-1 hover:bg-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-900 font-bold">
+                            <i class="fas fa-chalkboard-user"></i>
+                        </div>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Enseignants</h3>
+                        <p class="mt-2 text-sm text-slate-600">Gérer les profils.</p>
+                        <div class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber-700">
+                            Accéder <i class="fas fa-arrow-right text-xs transition group-hover:translate-x-1"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('courses.index') }}"
+                       class="group flex flex-col rounded-2xl border border-blue-100 bg-blue-50/50 p-6 transition hover:shadow-md hover:-translate-y-1 hover:bg-white">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="mt-5 text-lg font-bold text-slate-900">Cours</h3>
+                        <p class="mt-2 text-sm text-slate-600">Gérer le catalogue.</p>
+                        <div class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
+                            Accéder <i class="fas fa-arrow-right text-xs transition group-hover:translate-x-1"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Overview -->
+            <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                            <span class="h-3 w-3 rounded-full bg-amber-400"></span>
+                            Vue d'ensemble
+                        </h2>
+                        <p class="mt-2 text-sm text-slate-600">Résumé des indicateurs.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Students Progress -->
+                    <div>
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-user-graduate text-slate-900 text-lg"></i>
+                                <span class="font-bold text-slate-900">Étudiants</span>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-500">{{ total_students }} inscrits</span>
+                        </div>
+                        <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-full rounded-full bg-slate-900 transition-all duration-700" style="width: {{ [total_students * 8, 100] | min }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Teachers Progress -->
+                    <div>
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-chalkboard-user text-amber-500 text-lg"></i>
+                                <span class="font-bold text-slate-900">Enseignants</span>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-500">{{ total_teachers }} actifs</span>
+                        </div>
+                        <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 transition-all duration-700" style="width: {{ [total_teachers * 12, 100] | min }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Courses Progress -->
+                    <div>
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-book-open text-blue-600 text-lg"></i>
+                                <span class="font-bold text-slate-900">Cours</span>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-500">{{ total_courses }} disponibles</span>
+                        </div>
+                        <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-700" style="width: {{ [total_courses * 10, 100] | min }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        {% if c.teacher_id %}
-          <span class="badge badge-green">Assigné</span>
-        {% else %}
-          <span class="badge badge-gray">Sans prof</span>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
 
-    {% else %}
-    <div class="empty-state" style="padding:40px 20px">
-      <div class="empty-icon"><i class="fas fa-book-open"></i></div>
-      <p>Aucun cours enregistré.</p>
-      <a href="{{ url_for('courses.index') }}" class="btn btn-primary btn-sm">
-        <i class="fas fa-plus"></i> Ajouter un cours
-      </a>
-    </div>
-    {% endif %}
+        <!-- Right Column -->
+        <div class="space-y-8">
 
-  </div>
+            <!-- Recent Courses -->
+            <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+                <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                            <span class="h-3 w-3 rounded-full bg-blue-500"></span>
+                            Derniers cours
+                        </h2>
+                        <p class="mt-2 text-sm text-slate-600">Récents.</p>
+                    </div>
+                    <a href="{{ url_for('courses.index') }}"
+                       class="text-sm font-semibold text-slate-700 hover:text-slate-900 transition">Voir tout →</a>
+                </div>
+
+                {% if courses %}
+                    {% set colors = [
+                        'bg-slate-900 text-white',
+                        'bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-900',
+                        'bg-gradient-to-br from-blue-500 to-indigo-600 text-white',
+                        'bg-gradient-to-br from-emerald-400 to-teal-500 text-white',
+                        'bg-gradient-to-br from-rose-500 to-pink-500 text-white'
+                    ] %}
+
+                    <div class="space-y-3">
+                        {% for c in courses[-4:] | reverse %}
+                        <div class="flex items-center gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:bg-white hover:shadow-sm">
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg {{ colors[loop.index0 % 5] }}">
+                                <i class="fas fa-book text-sm"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate font-semibold text-slate-900">{{ c.title|truncate(20) }}</p>
+                                <p class="text-xs text-slate-500">{{ c.student_ids|length }} étudiant(s)</p>
+                            </div>
+                            {% if c.teacher_id %}
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 shrink-0">
+                                    <i class="fas fa-check text-xs"></i>
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600 shrink-0">
+                                    —
+                                </span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
+                        <i class="fas fa-book-open text-3xl text-slate-300 mb-3 inline-block"></i>
+                        <p class="text-sm font-semibold text-slate-600">Aucun cours</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Info Block -->
+            <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-950 p-8 text-white shadow-sm">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 mb-4">
+                    <i class="fas fa-shield-alt text-amber-400 text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold">Sécurité intégrée</h3>
+                <p class="mt-3 text-sm leading-6 text-slate-300">
+                    Gestion centralisée avec authentification sécurisée pour protéger vos données institutionnelles.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
 {% endblock %}
+

@@ -1,70 +1,119 @@
 {% extends 'base.html' %}
 {% block title %}Cours{% endblock %}
-{% block page_title %}Cours{% endblock %}
 
 {% block content %}
 
-<div class="section-header">
-  <h2>
-    <i class="fas fa-book-open" style="font-size:1.1rem;color:var(--gold)"></i>
-    Catalogue des cours
-    <span>{{ pagination.total }} cours</span>
-  </h2>
-  <a href="{{ url_for('courses.new') }}" class="btn btn-primary">
-    <i class="fas fa-plus"></i> Nouveau cours
-  </a>
-</div>
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-3xl font-black text-slate-900">Catalogue des cours</h1>
+    <p class="mt-2 text-sm text-slate-600">{{ pagination.total }} cours enregistrés</p>
+  </div>
 
+  <button onclick="document.getElementById('modal-create-course').style.display='flex'"
+          class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
+    <i class="fas fa-plus"></i> Ajouter
+  </button>
+</div>
+<div class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <form method="GET" action="{{ url_for('courses.index') }}" class="grid grid-cols-1 gap-4 md:grid-cols-4">
+
+    <div class="md:col-span-3">
+      <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">Recherche</label>
+      <input type="text"
+             name="search"
+             value="{{ search or '' }}"
+             placeholder="Rechercher un cours par titre..."
+             class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 placeholder-slate-400 focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900">
+    </div>
+
+    <div class="flex items-end gap-2">
+      <button type="submit"
+              class="flex-1 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+        <i class="fas fa-search"></i> Rechercher
+      </button>
+
+      <a href="{{ url_for('courses.index') }}"
+         class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+        Reset
+      </a>
+    </div>
+
+  </form>
+</div>
 {% if courses %}
-<div class="table-wrapper">
-  <table class="data-table">
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <table class="w-full">
     <thead>
-      <tr>
-        <th>#</th>
-        <th>Titre du cours</th>
-        <th>Enseignant</th>
-        <th>Étudiants</th>
-        <th>Statut</th>
-        <th>Actions</th>
+      <tr class="border-b border-slate-200 bg-slate-50">
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">#</th>
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Titre</th>
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Enseignant</th>
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Étudiants</th>
+        <!-- <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th> -->
+        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="divide-y divide-slate-200">
       {% for c in courses %}
-      <tr>
-        <td>{{ c.id }}</td>
-        <td><span class="td-main">{{ c.title }}</span></td>
-        <td>
+      <tr class="transition hover:bg-slate-50">
+        <td class="px-6 py-4 text-sm font-semibold text-slate-600">{{ c.id }}</td>
+
+        <td class="px-6 py-4 text-sm font-semibold text-slate-900">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 font-bold text-white">
+              <i class="fas fa-book"></i>
+            </div>
+            <span>{{ c.title }}</span>
+          </div>
+        </td>
+
+        <td class="px-6 py-4 text-sm">
           {% if c.teacher_id %}
-            <span class="badge badge-green"><i class="fas fa-check" style="font-size:.6rem"></i> Assigné</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+              <i class="fas fa-check text-xs"></i> Assigné
+            </span>
           {% else %}
-            <span class="badge badge-gray">Non assigné</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+              Non assigné
+            </span>
           {% endif %}
         </td>
-        <td>
-          <span class="badge badge-navy">
-            <i class="fas fa-users" style="font-size:.6rem"></i>
-            {{ c.student_ids|length }}
+
+        <td class="px-6 py-4 text-sm">
+          <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+            <i class="fas fa-users text-xs"></i> {{ c.student_ids|length }}
           </span>
         </td>
-        <td>
+
+        <!-- <td class="px-6 py-4 text-sm">
           {% if c.teacher_id and c.student_ids|length > 0 %}
-            <span class="badge badge-green">Complet</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+              Complet
+            </span>
           {% elif c.teacher_id %}
-            <span class="badge badge-amber">Sans étudiants</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+              Sans étudiants
+            </span>
           {% else %}
-            <span class="badge badge-rose">Incomplet</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">
+              Incomplet
+            </span>
           {% endif %}
-        </td>
-        <td>
-          <div class="actions">
-            <a href="{{ url_for('courses.show', course_id=c.id) }}" class="btn btn-info btn-sm">
-              <i class="fas fa-cog"></i> Gérer
+        </td> -->
+
+        <td class="px-6 py-4 text-sm">
+          <div class="flex items-center gap-2">
+            <a href="{{ url_for('courses.show', course_id=c.id) }}"
+               class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-50">
+              <i class="fas fa-cog"></i>
             </a>
+
             <form method="POST"
                   action="{{ url_for('courses.delete', course_id=c.id) }}"
                   style="display:inline"
                   onsubmit="return confirm('Supprimer ce cours ?')">
-              <button type="submit" class="btn btn-danger btn-sm">
+              <button type="submit"
+                      class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 font-semibold text-rose-700 transition hover:bg-rose-100">
                 <i class="fas fa-trash"></i>
               </button>
             </form>
@@ -75,15 +124,87 @@
     </tbody>
   </table>
 </div>
+
 {% include 'partials/_pagination.html' with context %}
+
 {% else %}
-<div class="empty-state">
-  <div class="empty-icon"><i class="fas fa-book-open"></i></div>
-  <p>Aucun cours enregistré pour le moment.</p>
-  <a href="{{ url_for('courses.new') }}" class="btn btn-primary">
+<div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-8 py-16 text-center">
+  <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+    <i class="fas fa-book-open text-2xl"></i>
+  </div>
+  <h3 class="text-xl font-bold text-slate-900">Aucun cours enregistré</h3>
+  <p class="mt-2 text-sm text-slate-600">Commencez par créer votre premier cours.</p>
+
+  <button onclick="document.getElementById('modal-create-course').style.display='flex'"
+          class="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
     <i class="fas fa-plus"></i> Créer le premier cours
-  </a>
+  </button>
 </div>
 {% endif %}
+
+<!-- Modal création cours -->
+<div id="modal-create-course"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+     style="display:none">
+
+  <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl"
+       onclick="event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 px-8 py-6">
+      <h3 class="flex items-center gap-3 text-xl font-bold text-slate-900">
+        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
+          <i class="fas fa-plus"></i>
+        </span>
+        Nouveau cours
+      </h3>
+
+      <button onclick="document.getElementById('modal-create-course').style.display='none'"
+              class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="px-8 py-6">
+      <form method="POST" action="{{ url_for('courses.add') }}">
+
+        <div class="mb-6">
+          <label class="mb-3 block text-sm font-bold uppercase tracking-wider text-slate-600">
+            Titre du cours
+          </label>
+          <input type="text"
+                 name="title"
+                 placeholder="Ex : Algorithmique avancée"
+                 class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-semibold text-slate-900 placeholder-slate-400 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
+                 required />
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="submit"
+                  class="flex-1 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
+            <i class="fas fa-check"></i> Créer le cours
+          </button>
+
+          <button type="button"
+                  onclick="document.getElementById('modal-create-course').style.display='none'"
+                  class="flex-1 rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50">
+            Annuler
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.getElementById('modal-create-course').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+    }
+  });
+</script>
 
 {% endblock %}
