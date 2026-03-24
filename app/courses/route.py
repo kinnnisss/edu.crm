@@ -37,11 +37,6 @@ def index():
     )
 
 
-@courses_bp.route("/new", methods=["GET"])
-@login_required
-def new():
-    return render_template("courses/create.html")
-
 @courses_bp.route("/add", methods=["POST"])
 @login_required
 def add():
