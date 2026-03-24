@@ -48,7 +48,7 @@ def add():
         return redirect(url_for("courses.index"))
     else:
         flash("Erreur: titre obligatoire", "danger")
-        return redirect(url_for("courses.new"))
+        return redirect(url_for("courses.index"))
 
 @courses_bp.route("/<int:course_id>", methods=["GET"])
 @login_required
