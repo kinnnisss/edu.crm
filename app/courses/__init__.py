@@ -1,4 +1,3 @@
-# app/courses/__init__.py
 from flask import Blueprint
 
 courses_bp = Blueprint(

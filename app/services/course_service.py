@@ -1,5 +1,3 @@
-# app/services/course_service.py
-
 class CourseService:
     def __init__(self):
         self.courses = [

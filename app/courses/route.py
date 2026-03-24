@@ -1,4 +1,3 @@
-# app/courses/route.py
 from flask import render_template, request, redirect, url_for, flash
 
 from . import courses_bp

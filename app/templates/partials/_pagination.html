@@ -6,7 +6,6 @@
         {% set current_major = request.args.get('major', '') %}
         {% set current_speciality = request.args.get('speciality', '') %}
 
-        <!-- Previous -->
         {% if pagination.has_prev %}
         <a href="{{ url_for(request.endpoint, page=pagination.prev_page, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
            class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -18,11 +17,9 @@
         </span>
         {% endif %}
 
-        <!-- Page Range -->
         {% set start_page = [1, pagination.page - 2]|max %}
         {% set end_page = [pagination.total_pages, pagination.page + 2]|min %}
 
-        <!-- First Page + Ellipsis -->
         {% if start_page > 1 %}
         <a href="{{ url_for(request.endpoint, page=1, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
            class="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -33,7 +30,6 @@
         {% endif %}
         {% endif %}
 
-        <!-- Pages -->
         {% for p in range(start_page, end_page + 1) %}
             {% if p == pagination.page %}
             <span class="inline-flex items-center px-3 py-2 rounded-lg bg-slate-900 font-semibold text-white shadow">
@@ -47,7 +43,6 @@
             {% endif %}
         {% endfor %}
 
-        <!-- Ellipsis + Last Page -->
         {% if end_page < pagination.total_pages %}
             {% if end_page < pagination.total_pages - 1 %}
             <span class="inline-flex items-center px-2 text-slate-500">...</span>
@@ -58,7 +53,6 @@
             </a>
         {% endif %}
 
-        <!-- Next -->
         {% if pagination.has_next %}
         <a href="{{ url_for(request.endpoint, page=pagination.next_page, per_page=pagination.per_page, search=current_search, major=current_major, speciality=current_speciality) }}"
            class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 transition hover:bg-slate-50">

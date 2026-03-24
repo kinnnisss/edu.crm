@@ -49,7 +49,6 @@
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Titre</th>
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Enseignant</th>
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Étudiants</th>
-        <!-- <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th> -->
         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
       </tr>
     </thead>
@@ -84,23 +83,6 @@
             <i class="fas fa-users text-xs"></i> {{ c.student_ids|length }}
           </span>
         </td>
-
-        <!-- <td class="px-6 py-4 text-sm">
-          {% if c.teacher_id and c.student_ids|length > 0 %}
-            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-              Complet
-            </span>
-          {% elif c.teacher_id %}
-            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
-              Sans étudiants
-            </span>
-          {% else %}
-            <span class="inline-flex items-center gap-1 rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">
-              Incomplet
-            </span>
-          {% endif %}
-        </td> -->
-
         <td class="px-6 py-4 text-sm">
           <div class="flex items-center gap-2">
             <a href="{{ url_for('courses.show', course_id=c.id) }}"
@@ -142,7 +124,6 @@
 </div>
 {% endif %}
 
-<!-- Modal création cours -->
 <div id="modal-create-course"
      class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
      style="display:none">
@@ -150,7 +131,6 @@
   <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl"
        onclick="event.stopPropagation()">
 
-    <!-- Header -->
     <div class="flex items-center justify-between border-b border-slate-100 px-8 py-6">
       <h3 class="flex items-center gap-3 text-xl font-bold text-slate-900">
         <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
@@ -165,7 +145,6 @@
       </button>
     </div>
 
-    <!-- Body -->
     <div class="px-8 py-6">
       <form method="POST" action="{{ url_for('courses.add') }}">
 
